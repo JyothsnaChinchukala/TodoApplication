@@ -13,8 +13,14 @@ GET http://localhost:3000/todos/?search_q=Buy
 ###API1-S5
 GET http://localhost:3000/todos/?category=WORK&status=DONE
 
-###API1-S1
+###API1-S6
 GET http://localhost:3000/todos/?category=HOME
 
-###API1-S1
+###API1-S7
 GET http://localhost:3000/todos/?category=LEARNING&priority=HIGH
+
+###API2
+GET http://localhost:3000/todos/2/
+
+###API3 
+GET http://localhost:3000/todos/?date=2021-12-12

@@ -23,111 +23,57 @@ const initializeDbAndServer = async () => {
 };
 initializeDbAndServer();
 
-const hasPriorityAndStatusProperties = (requestQuery, response) => {
+const hasPriorityAndStatusProperties = (requestQuery) => {
   if (
     requestQuery.priority !== undefined &&
     requestQuery.status !== undefined
   ) {
-    if (
-      requestQuery.priority in ["HIGH", "MEDIUM", "LOW"] &&
-      requestQuery.status in ["TO DO", "IN PROGRESS", "DONE"]
-    ) {
-      return true;
-    } else {
-      if (!(requestQuery.priority in ["HIGH", "MEDIUM", "LOW"])) {
-        response.status(400);
-        response.send("Invalid Todo Priority");
-      } else if (!(requestQuery.status in ["TO DO", "IN PROGRESS", "DONE"])) {
-        response.status(400);
-        response.send("Invalid Todo Status");
-      }
-    }
+    return true;
   }
 };
-const hasCategoryAndStatusProperties = (requestQuery, response) => {
+const hasCategoryAndStatusProperties = (requestQuery) => {
   if (
     requestQuery.category !== undefined &&
     requestQuery.status !== undefined
   ) {
-    if (
-      requestQuery.category in ["WORK", "HOME", "LEARNING"] &&
-      requestQuery.status in ["TO DO", "IN PROGRESS", "DONE"]
-    ) {
-      return true;
-    } else {
-      if (!(requestQuery.category in ["WORK", "HOME", "LEARNING"])) {
-        response.status(400);
-        response.send("Invalid Todo Category");
-      } else if (!(requestQuery.status in ["TO DO", "IN PROGRESS", "DONE"])) {
-        response.status(400);
-        response.send("Invalid Todo Status");
-      }
-    }
+    return true;
   }
 };
-const hasCategoryAndPriorityProperties = (requestQuery, response) => {
+const hasCategoryAndPriorityProperties = (requestQuery) => {
   if (
     requestQuery.category !== undefined &&
     requestQuery.priority !== undefined
   ) {
-    if (
-      requestQuery.category in ["WORK", "HOME", "LEARNING"] &&
-      requestQuery.priority in ["HIGH", "MEDIUM", "LOW"]
-    ) {
-      return true;
-    } else {
-      if (!(requestQuery.category in ["WORK", "HOME", "LEARNING"])) {
-        response.status(400);
-        response.send("Invalid Todo Category");
-      } else if (!(requestQuery.priority in ["HIGH", "MEDIUM", "LOW"])) {
-        response.status(400);
-        response.send("Invalid Todo Priority");
-      }
-    }
-  }
-};
-
-const hasPriorityProperty = (requestQuery, response) => {
-  if (requestQuery.priority !== undefined) {
-    if (requestQuery.priority in ["HIGH", "MEDIUM", "LOW"]) {
-      return true;
-    } else {
-      if (!(requestQuery.priority in ["HIGH", "MEDIUM", "LOW"])) {
-        response.status(400);
-        response.send("Invalid Todo Priority");
-      }
-    }
-  }
-};
-
-const hasStatusProperty = (requestQuery, response) => {
-  if (requestQuery.status !== undefined) {
-    if (requestQuery.status in ["TO DO", "IN PROGRESS", "DONE"] === true) {
-      return true;
-    } else {
-      response.status(400);
-      response.send("Invalid Todo Status");
-      return false;
-    }
-  }
-};
-const hasCategoryProperty = (requestQuery, response) => {
-  if (requestQuery.category !== undefined) {
-    if (requestQuery.category in ["WORK", "HOME", "LEARNING"]) {
-      return true;
-    } else {
-      if (!(requestQuery.category in ["WORK", "HOME", "LEARNING"])) {
-        response.status(400);
-        response.send("Invalid Todo Category");
-        return false;
-      }
-    }
-  }
-};
-const seachQuery = (requestQuery, response) => {
-  if (requestQuery.search_q !== "") {
     return true;
   }
+};
+
+const hasPriorityProperty = (requestQuery) => {
+  if (requestQuery.priority !== undefined) {
+    return true;
+  }
+};
+
+const hasStatusProperty = (requestQuery) => {
+  if (requestQuery.status !== undefined) {
+    return true;
+  }
+};
+const hasCategoryProperty = (requestQuery) => {
+  if (requestQuery.category !== undefined) {
+    return true;
+  }
+};
+
+const convertToCamelCase = (eachTodo) => {
+  return {
+    id: eachTodo.id,
+    todo: eachTodo.todo,
+    priority: eachTodo.priority,
+    status: eachTodo.status,
+    category: eachTodo.category,
+    dueDate: eachTodo.due_date,
+  };
 };
 
 app.get("/todos/", async (request, response) => {
@@ -136,7 +82,11 @@ app.get("/todos/", async (request, response) => {
   const { search_q = "", category, priority, status, date } = request.query;
 
   switch (true) {
-    case hasPriorityAndStatusProperties(request.query, response): //if this is true then below query is taken in the code
+    case hasPriorityAndStatusProperties(request.query): //if this is true then below query is taken in the code
+      /*if (
+        priority in ["HIGH", "MEDIUM", "LOW"] &&
+        status in ["TO DO", "IN PROGRESS", "DONE"]
+      ) {*/
       getTodosQuery = `
             SELECT
                 *
@@ -148,8 +98,21 @@ app.get("/todos/", async (request, response) => {
                 AND priority = '${priority}';`;
       data = await db.all(getTodosQuery);
       response.send(data);
+      /*} else {
+        if (!(status in ["TO DO", "IN PROGRESS", "DONE"])) {
+          response.status(400);
+          response.send("Invalid Todo Status");
+        } else {
+          response.status(400);
+          response.send("Invalid Todo Priority");
+        }
+      }*/
       break;
-    case hasCategoryAndStatusProperties(request.query, response):
+    case hasCategoryAndStatusProperties(request.query):
+      /*if (
+        category in ["WORK", "HOME", "LEARNING"] &&
+        status in ["TO DO", "IN PROGRESS", "DONE"]
+      ) {*/
       getTodosQuery = `
             SELECT
                 *
@@ -161,8 +124,21 @@ app.get("/todos/", async (request, response) => {
                  AND category = '${category}';`;
       data = await db.all(getTodosQuery);
       response.send(data);
+      /*} else {
+        if (!(status in ["TO DO", "IN PROGRESS", "DONE"])) {
+          response.status(400);
+          response.send("Invalid Todo Status");
+        } else {
+          response.status(400);
+          response.send("Invalid Todo Category");
+        }
+      }*/
       break;
-    case hasCategoryAndPriorityProperties(request.query, response):
+    case hasCategoryAndPriorityProperties(request.query):
+      /*if (
+        priority in ["HIGH", "MEDIUM", "LOW"] &&
+        category in ["WORK", "HOME", "LEARNING"]
+      ) {*/
       getTodosQuery = `
         SELECT
             *
@@ -174,8 +150,18 @@ app.get("/todos/", async (request, response) => {
             AND category = '${category}';`;
       data = await db.all(getTodosQuery);
       response.send(data);
+      /* } else {
+        if (!(priority in ["HIGH", "MEDIUM", "LOW"])) {
+          response.status(400);
+          response.send("Invalid Todo Priority");
+        } else {
+          response.status(400);
+          response.send("Invalid Todo Category");
+        }
+      }*/
       break;
-    case hasStatusProperty(request.query, response):
+    case hasStatusProperty(request.query):
+      /*if (status in ["TO DO", "IN PROGRESS", "DONE"]) {*/
       getTodosQuery = `
         SELECT
             *
@@ -186,9 +172,14 @@ app.get("/todos/", async (request, response) => {
             AND status = '${status}';`;
       data = await db.all(getTodosQuery);
       response.send(data);
+      /*} else {
+        response.status(400);
+        response.send("Invalid Todo Status");
+      }*/
       break;
 
-    case hasPriorityProperty(request.query, response):
+    case hasPriorityProperty(request.query):
+      /*if (priority in ["HIGH", "MEDIUM", "LOW"]) {*/
       getTodosQuery = `
         SELECT
             *
@@ -199,8 +190,13 @@ app.get("/todos/", async (request, response) => {
             AND priority = '${priority}';`;
       data = await db.all(getTodosQuery);
       response.send(data);
+      /*} else {
+        response.status(400);
+        response.send("Invalid Todo Priority");
+      }*/
       break;
     case hasCategoryProperty(request.query, response):
+      /*if (category in ["WORK", "HOME", "LEARNING"]) {*/
       getTodosQuery = `
         SELECT
             *
@@ -211,8 +207,12 @@ app.get("/todos/", async (request, response) => {
             AND category = '${category}';`;
       data = await db.all(getTodosQuery);
       response.send(data);
+      /* } else {
+        response.status(400);
+        response.send("Invalid Todo Category");
+      }*/
       break;
-    case seachQuery(request.query, response):
+    default:
       getTodosQuery = `
         SELECT
             *
@@ -224,5 +224,17 @@ app.get("/todos/", async (request, response) => {
       response.send(data);
   }
 });
+
+app.get("/todos/:todoId/", async (request, response) => {
+  let { todoId } = request.params;
+  let sqlQuery = `
+        SELECT * FROM todo
+        WHERE id = ${todoId};
+    `;
+  let dbResponse = await db.all(sqlQuery);
+  response.send(dbResponse.map(convertToCamelCase)[0]);
+});
+
+app.get("/todos/");
 
 module.exports = app;
