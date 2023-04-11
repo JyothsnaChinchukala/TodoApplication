@@ -1,0 +1,20 @@
+###API1-S1
+GET http://localhost:3000/todos/?status=TO%20DO
+
+###API1-S2
+GET http://localhost:3000/todos/?priority=HIGH
+
+###API1-S3
+GET http://localhost:3000/todos/?priority=HIGH&status=IN%20PROGRESS
+
+###API1-S4
+GET http://localhost:3000/todos/?search_q=Buy
+
+###API1-S5
+GET http://localhost:3000/todos/?category=WORK&status=DONE
+
+###API1-S1
+GET http://localhost:3000/todos/?category=HOME
+
+###API1-S1
+GET http://localhost:3000/todos/?category=LEARNING&priority=HIGH
